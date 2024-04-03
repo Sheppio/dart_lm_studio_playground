@@ -137,7 +137,7 @@ Do not assume any information.  If you don't fully understand and cant match the
 
 {
     "function_name": "light_switch",
-    "description": "Turns lights on or off in a specified room",
+    "description": "Turns lights on or off in a specified room.  The request must mention lights.",
 "properties": {
     "actions": {
       "type": "array",
@@ -193,19 +193,16 @@ Do not assume any information.  If you don't fully understand and cant match the
     "responseFormat": "json",
     "messages": [
       {"role": "system", "content": sysInst},
-      //{"role": "user", "content": "I'd like a large pizza with anchovies and pepperoni"}
+      {"role": "user", "content": "I'd like a large pizza with anchovies and pepperoni"}
       //{"role": "user", "content": "I'd like to go to Reading town centre."}
       //{"role": "user", "content": "Give me a recipe for a taco"}
       //{"role": "user", "content": "Turn the lights on in the kitchen and off in the bathroom"}
       //{"role": "user", "content": "Bedroom lights on."}
       //{"role": "user", "content": "Bedroom lights on and order me a taxi to London."}
-      //{"role": "user", "content": "Bedroom lights on and order me a taxi to London along with a chicken  small pizza."}
-      //{"role": "user", "content": "Bedroom lights on turn the radio off"} //this fails
+      //{"role": "user", "content": "Bedroom lights on and order me a taxi to London along with a chicken small pizza."}
+      //{"role": "user", "content": "Bedroom lights on and turn the radio off"} //this fails
       //{"role": "user", "content": "Turn the radio off"} // this tries to turn the lights off
-      {
-        "role": "user",
-        "content": "Add peas, beetroot and chicken to my shopping list, but remove beef and pork."
-      } // this tries to turn the lights off
+      //{"role": "user", "content": "Add peas, beetroot and chicken to my shopping list, but remove beef and pork."}
     ],
     "temperature": 0.5,
     "max_tokens": -1,
