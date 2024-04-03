@@ -73,9 +73,12 @@ void main(List<String> arguments) async {
 //--------------------------------------------------
 
   var sysInst = '''
-You are a helpful assistant with access to the following functions. Use them if required and only respond with JSON. - 
+You are a helpful assistant with access to the following functions. Use them if required and ensure response is valid JSON. - 
+
+Do not assume any information.  If you don't fully understand and cant match the request to a function, respond with {"error": "No function found"}
+
 {
-    "name": "order_pizza",
+    "function_name": "order_pizza",
     "description": "Order a pizza with custom toppings",
     "parameters": {
         "type": "object",
@@ -99,9 +102,75 @@ You are a helpful assistant with access to the following functions. Use them if 
     }
 }
 
+{
+    "function_name": "shopping_list_update",
+    "description": "Adds and removes items from a shopping list",
+"properties": {
+    "actions": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "item": {
+              "type": "string",
+                "description": "item to be added or removed from the shopping list"
+            },
+            "state": {
+              "type": "boolean",
+                "description": "false if the item should be removed and true if it should be turned added"
+            }
+          },
+          "required": [
+            "item",
+            "state"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "actions"
+  ]
+    }
+}
 
 {
-    "name": "order_taxi",
+    "function_name": "light_switch",
+    "description": "Turns lights on or off in a specified room",
+"properties": {
+    "actions": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "room": {
+              "type": "string",
+                "description": "The room name where the lights are located"
+            },
+            "state": {
+              "type": "boolean",
+                "description": "false if the lights should be turned off, true if they should be turned on"
+            }
+          },
+          "required": [
+            "room",
+            "state"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "actions"
+  ]
+    }
+}
+
+
+{
+    "function_name": "order_taxi",
     "description": "Order a taxi to a destination",
     "parameters": {
         "type": "object",
@@ -117,20 +186,28 @@ You are a helpful assistant with access to the following functions. Use them if 
     }
 }
 
-If you cant match the request to a function, respond with {"error": "No function found"}
-
 ''';
 
   var response = await dio.post('http://192.168.1.132:1234/v1/chat/completions', data: {
     "model": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf",
+    "responseFormat": "json",
     "messages": [
       {"role": "system", "content": sysInst},
       //{"role": "user", "content": "I'd like a large pizza with anchovies and pepperoni"}
       //{"role": "user", "content": "I'd like to go to Reading town centre."}
-      {"role": "user", "content": "Give me a recipe for a taco"}
-      //{"role": "user", "content": "Turn the lights on in the kitchen"}
+      //{"role": "user", "content": "Give me a recipe for a taco"}
+      //{"role": "user", "content": "Turn the lights on in the kitchen and off in the bathroom"}
+      //{"role": "user", "content": "Bedroom lights on."}
+      //{"role": "user", "content": "Bedroom lights on and order me a taxi to London."}
+      //{"role": "user", "content": "Bedroom lights on and order me a taxi to London along with a chicken  small pizza."}
+      //{"role": "user", "content": "Bedroom lights on turn the radio off"} //this fails
+      //{"role": "user", "content": "Turn the radio off"} // this tries to turn the lights off
+      {
+        "role": "user",
+        "content": "Add peas, beetroot and chicken to my shopping list, but remove beef and pork."
+      } // this tries to turn the lights off
     ],
-    "temperature": 0.7,
+    "temperature": 0.5,
     "max_tokens": -1,
     "stream": false
   });
